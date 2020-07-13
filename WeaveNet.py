@@ -7,6 +7,7 @@ import math
 import datetime
 import os
 import matplotlib.pyplot as plt
+import openpyxl
 
 pd.set_option('display.max_rows',None)
 pd.set_option('display.max_columns',None)
@@ -35,7 +36,12 @@ def calc_value_center():
 	stock_premium = [0.81,0,-0.1,-5.56,-3,8.34,0.28,-5.2,-8.24,2.34,-7.3,-26.52,-0.29]
 	debt_premium =  [-2.79,0.79,2.09,2.58,2.89,4.63,5.18,7.33,7.4,7.44,7.46,9.23,9.52]
 	return np.mean(stock_premium),np.mean(debt_premium)
-	
+
+def calc_value_center_unlist(unlistpd):
+	stock_premium =  unlistpd['转股溢价率']
+	debt_premium = 	 unlistpd['纯债溢价率']
+	return np.mean(stock_premium), np.mean(debt_premium)
+
 def calc_value_distance(a, b,va,vb):
 	return math.sqrt((a-va)**2+(b-vb)**2)
 
@@ -48,15 +54,18 @@ def calc_value_distance(a, b,va,vb):
 
 
 if __name__=='__main__':
-	
-	
+
 	from sys import argv
 	tnow = ""
 	if len(argv) > 1:
-		tnow = datetime.datetime.strptime(argv[1], '%Y/%m/%d')
+		if argv[1] == '*':
+			tnow = datetime.datetime.now()
+		else:
+			tnow = datetime.datetime.strptime(argv[1], '%Y/%m/%d')
 	else:
-		tnow = datetime.datetime.now()
-		
+		print("please run like 'python WeaveNet.py [*|2020/07/07]'")
+		exit(1)
+
 	print("time is :" + tnow.strftime('%Y%m%d'))
 	
 	filefolder = r'./data/' + tnow.strftime('%Y%m%d')
@@ -71,19 +80,28 @@ if __name__=='__main__':
 		print("AkShareFile:%s exist" % (filefolder))
 
 	resultpath,insheetname = get_akshare_comparison(getakpath)
-	print("resultxlspath:" + resultpath + "sheetname:" +insheetname)
+	print("data of path:" + resultpath + "sheetname:" +insheetname)
 	
 	
+
+	bond_unlisted_df = pd.read_excel(resultpath, insheetname)[['转债名称','正股代码','转股溢价率','纯债溢价率','申购日期','上市日期']]
+	bond_unlisted_df = bond_unlisted_df[bond_unlisted_df['上市日期'] == '-']
+	va,vb = calc_value_center_unlist(bond_unlisted_df)
+	#va,vb = calc_value_center()
+	print("the average of unlisted bond 转股溢价率,纯债溢价率",va,vb)
+
+
 	bond_cov_comparison_df = pd.read_excel(resultpath, insheetname)[['最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','申购日期']]
-	va,vb = calc_value_center()
 	bond_cov_comparison_df['价值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
 	bond_expect_sort_df = bond_cov_comparison_df.sort_values('价值距离',ascending=True)
 	
 	fileout = tnow.strftime('%Y_%m_%d') + '_out.xls'
-	outanalypath =  "%s/%s" % (filefolder,fileout) 
-	outsheetname = 'analyze'
-	bond_expect_sort_df.to_excel(outanalypath,sheet_name=outsheetname)
-	print("analyzexlspath:" + outanalypath + "sheetname:" +outsheetname)
+	outanalypath =  "%s/%s" % (filefolder,fileout)
+	writer = pd.ExcelWriter(outanalypath)
+	bond_unlisted_df.to_excel(writer, 'unlist')
+	bond_expect_sort_df.to_excel(writer,'analyze')
+	writer.save()
+	print("value distance of  'unlist and analye' :" + fileout)
 
 
 	#print(bond_expect_sort_df)
@@ -107,7 +125,7 @@ if __name__=='__main__':
 	fileimage = tnow.strftime('%Y_%m_%d') + '_image.png'
 	imagepath =  "%s/%s" % (filefolder,fileimage) 
 	plt.savefig(imagepath)
-	print("analyzeimagepath:" + imagepath )
+	print("value image of  path:" + imagepath )
 	#plt.show()
 
 
