@@ -23,7 +23,7 @@ def get_akshare_comparison(xlsfile):
 	isExist = os.path.exists(xlsfile)
 	if not isExist:
 		bond_cov_comparison_df = ak.bond_cov_comparison()
-		bond_cov_comparison_df.to_excel(xlsfile,sheet_name=shname)  
+		bond_cov_comparison_df.to_excel(xlsfile,sheet_name=shname)
 		print("xfsfile:%s create" % (xlsfile))  
 	else:
 		print("xfsfile:%s exist" % (xlsfile))
@@ -84,14 +84,14 @@ if __name__=='__main__':
 	
 	
 
-	bond_unlisted_df = pd.read_excel(resultpath, insheetname)[['转债名称','正股代码','转股溢价率','纯债溢价率','申购日期','上市日期']]
+	bond_unlisted_df = pd.read_excel(resultpath, insheetname,converters={'正股代码':str})[['转债名称','正股代码','转股溢价率','纯债溢价率','申购日期','上市日期']]
 	bond_unlisted_df = bond_unlisted_df[bond_unlisted_df['上市日期'] == '-']
 	va,vb = calc_value_center_unlist(bond_unlisted_df)
 	#va,vb = calc_value_center()
 	print("the average of unlisted bond 转股溢价率,纯债溢价率",va,vb)
 
 
-	bond_cov_comparison_df = pd.read_excel(resultpath, insheetname)[['最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','申购日期']]
+	bond_cov_comparison_df = pd.read_excel(resultpath, insheetname,converters={'正股代码':str})[['最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','申购日期']]
 	bond_cov_comparison_df['价值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
 	bond_expect_sort_df = bond_cov_comparison_df.sort_values('价值距离',ascending=True)
 	
@@ -108,10 +108,10 @@ if __name__=='__main__':
 	# 显示散点图
 	#bond_expect_sort_df.plot.scatter(x='纯债溢价率', y='转股溢价率')
 	X = bond_expect_sort_df.values
-	#plt.plot(X[:,3], X[:,2],"ro")
+	#plt.plot(X[:,6], X[:,5],"ro")
 	txt = X[:,1].reshape(1, -1)[0]
-	x = X[:,3].reshape(1, -1)[0]
-	y = X[:,2].reshape(1, -1)[0]
+	x = X[:,6].reshape(1, -1)[0]
+	y = X[:,5].reshape(1, -1)[0]
 	plt.scatter(x,y)
 	for i in range(len(txt)):
 		plt.annotate(txt[i][0:2], xy = (x[i],y[i]), xytext = (x[i]+0.1, y[i]+0.1)) #这里xy是需要标记的坐标，xytext是对应的标签坐标
