@@ -49,7 +49,7 @@ def calc_value_distance(a, b,va,vb):
 
 def get_pass_days(date):
 	if date == '-':
-		return 0
+		return -99
 	else:
 		delt = datetime.datetime.now() - datetime.datetime.strptime(date, '%Y%m%d')
 		return delt.days
