@@ -102,7 +102,8 @@ if __name__=='__main__':
     bond_cov_comparison_df = pd.read_excel(resultpath, insheetname,converters={'正股代码':str,'上市日期':str})[['最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','上市日期']]
     bond_cov_comparison_df['估值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
     bond_cov_comparison_df['交易天数'] = bond_cov_comparison_df.apply(lambda row: get_pass_days(row['上市日期']), axis=1)
-    bond_expect_sort_df = bond_cov_comparison_df.sort_values('交易天数',ascending=True)
+    #bond_expect_sort_df = bond_cov_comparison_df.sort_values('交易天数',ascending=True)
+    bond_expect_sort_df = bond_cov_comparison_df.sort_values('估值距离',ascending=True)
     bond_expect_startup_df = bond_expect_sort_df[bond_expect_sort_df['正股代码'].str.contains(r'^3.*?')]
     bond_expect_smallboard_df = bond_expect_sort_df[bond_expect_sort_df['正股代码'].str.contains(r'^0.*?')]
     bond_expect_bigboard_df = bond_expect_sort_df[bond_expect_sort_df['正股代码'].str.contains(r'^6.*?')]
