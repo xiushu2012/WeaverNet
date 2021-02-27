@@ -37,6 +37,8 @@ def calc_value_center():
 	debt_premium =  [-2.79,0.79,2.09,2.58,2.89,4.63,5.18,7.33,7.4,7.44,7.46,9.23,9.52]
 	return np.mean(stock_premium),np.mean(debt_premium)
 
+
+
 def calc_value_center_unlist(unlistpd):
 	stock_premium =  unlistpd['转股溢价率']
 	debt_premium = 	 unlistpd['纯债溢价率']
@@ -56,8 +58,6 @@ def get_pass_days(date):
 #bond_cov_comparison_df = pd.read_excel('compare-.xls', 'compare')['最新价'].str.replace('-','')
 #bond_expect_df = bond_cov_comparison_df['转股溢价率'].map(lambda x:-x)
 #new_price_select = bond_cov_comparison_df[bond_cov_comparison_df['最新价'].astype(float) < 120.0]
-
-
 
 
 
@@ -96,8 +96,9 @@ if __name__=='__main__':
     bond_unlisted_df = bond_unlisted_df[bond_unlisted_df['上市日期'] == '-']
     bond_unlisted_df = bond_unlisted_df[bond_unlisted_df['正股代码'] != '-']
 
-    va,vb = calc_value_center_unlist(bond_unlisted_df)
-    #va,vb = calc_value_center()
+
+    #va,vb = calc_value_center_unlist(bond_unlisted_df)
+    va,vb = calc_value_center()
     print("the average of unlisted bond 转股溢价率,纯债溢价率",va,vb)
 
 
