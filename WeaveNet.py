@@ -55,6 +55,21 @@ def get_pass_days(date):
 	else:
 		delt = datetime.datetime.now() - datetime.datetime.strptime(date, '%Y%m%d')
 		return delt.days
+def calc_expect_bond_price(zp,vb):
+    return ((100+vb)/100)*zp
+
+def calc_expect_bond_overflow(cp,ep):
+    if cp == '-':
+        return 100*(ep-100)/100
+    else:
+        return 100*(ep-cp)/cp
+
+def calc_expect_stock_overflow(zp,sp,va):
+    if zp == '-':
+        return 100*((100/(100+va))*100/sp -1)
+    else:
+        return 100*((100/(100+va))*zp/sp -1)
+
 #bond_cov_comparison_df = pd.read_excel('compare-.xls', 'compare')['最新价'].str.replace('-','')
 #bond_expect_df = bond_cov_comparison_df['转股溢价率'].map(lambda x:-x)
 #new_price_select = bond_cov_comparison_df[bond_cov_comparison_df['最新价'].astype(float) < 120.0]
@@ -107,7 +122,11 @@ if __name__=='__main__':
 
     bond_cov_comparison_df['估值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
     bond_cov_comparison_df['交易天数'] = bond_cov_comparison_df.apply(lambda row: get_pass_days(row['上市日期']), axis=1)
+    bond_cov_comparison_df['预期转债价格'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_price(row['纯债价值'],vb), axis=1)
+    bond_cov_comparison_df['预期转债增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_overflow(row['最新价'],row['预期转债价格']), axis=1)
+    bond_cov_comparison_df['预期转股增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_stock_overflow(row['预期转债价格'],row['转股价值'],va), axis=1)
     #bond_expect_sort_df = bond_cov_comparison_df.sort_values('交易天数',ascending=True)
+
     bond_expect_sort_df = bond_cov_comparison_df.sort_values('估值距离',ascending=True)
     bond_expect_startup_df = bond_expect_sort_df[bond_expect_sort_df['正股代码'].str.contains(r'^3.*?')]
     bond_expect_smallboard_df = bond_expect_sort_df[bond_expect_sort_df['正股代码'].str.contains(r'^0.*?')]
