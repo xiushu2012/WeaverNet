@@ -122,9 +122,9 @@ if __name__=='__main__':
 
     bond_cov_comparison_df['估值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
     bond_cov_comparison_df['交易天数'] = bond_cov_comparison_df.apply(lambda row: get_pass_days(row['上市日期']), axis=1)
-    bond_cov_comparison_df['预期转债价格'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_price(row['纯债价值'],vb), axis=1)
-    bond_cov_comparison_df['预期转债增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_overflow(row['最新价'],row['预期转债价格']), axis=1)
-    bond_cov_comparison_df['预期转股增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_stock_overflow(row['预期转债价格'],row['转股价值'],va), axis=1)
+    #bond_cov_comparison_df['预期转债价格'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_price(row['纯债价值'],vb), axis=1)
+    #bond_cov_comparison_df['预期转债增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_bond_overflow(row['最新价'],row['预期转债价格']), axis=1)
+    #bond_cov_comparison_df['预期转股增长'] = bond_cov_comparison_df.apply(lambda row: calc_expect_stock_overflow(row['预期转债价格'],row['转股价值'],va), axis=1)
     #bond_expect_sort_df = bond_cov_comparison_df.sort_values('交易天数',ascending=True)
 
     bond_expect_sort_df = bond_cov_comparison_df.sort_values('估值距离',ascending=True)
