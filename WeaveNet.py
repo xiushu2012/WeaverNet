@@ -117,7 +117,7 @@ if __name__=='__main__':
     print("the average of unlisted bond 转股溢价率,纯债溢价率",va,vb)
 
 
-    bond_cov_comparison_df = pd.read_excel(resultpath, insheetname,converters={'正股代码':str,'上市日期':str})[['最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','上市日期']]
+    bond_cov_comparison_df = pd.read_excel(resultpath, insheetname,converters={'正股代码':str,'上市日期':str})[['转债最新价','转债名称','正股代码','转股价值','纯债价值','转股溢价率','纯债溢价率','上市日期']]
     bond_cov_comparison_df = bond_cov_comparison_df[bond_cov_comparison_df['正股代码'] != '-']
 
     bond_cov_comparison_df['估值距离'] = bond_cov_comparison_df.apply(lambda row: calc_value_distance(row['转股溢价率'], row['纯债溢价率'],va,vb), axis=1)
